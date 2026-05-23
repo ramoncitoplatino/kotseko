@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Separator } from "@/components/ui/separator";
-import { AlertTriangle, Plus, Trash2, Loader2, ChevronLeft } from "lucide-react";
+import { AlertTriangle, Plus, Trash2, Loader2, ChevronLeft, Bell } from "lucide-react";
 import Image from "next/image";
 import type { OCRExtractedData } from "@/types";
 
@@ -234,6 +234,35 @@ export default function ReceiptReviewForm({
             <p className="text-red-500 text-sm">{form.formState.errors.totalAmount.message}</p>
           )}
         </div>
+
+        <Separator />
+
+        {/* Next Service Reminder */}
+        <div className="space-y-3">
+          <div className="flex items-center gap-2">
+            <Bell className="h-4 w-4 text-blue-500" />
+            <span className="font-medium text-gray-700 text-sm">Next Service Reminder <span className="text-gray-400 font-normal">(optional)</span></span>
+          </div>
+          <div className="space-y-1">
+            <Label htmlFor="nextServiceNote">What service is due next?</Label>
+            <Input id="nextServiceNote" placeholder="e.g. Oil change, PMS, Timing belt"
+              {...form.register("nextServiceNote")} />
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="space-y-1">
+              <Label htmlFor="nextServiceDate">Due Date</Label>
+              <Input id="nextServiceDate" type="date" {...form.register("nextServiceDate")} />
+            </div>
+            <div className="space-y-1">
+              <Label htmlFor="nextServiceMileage">Due at Mileage (km)</Label>
+              <Input id="nextServiceMileage" type="number" placeholder="e.g. 50000"
+                {...form.register("nextServiceMileage")} />
+            </div>
+          </div>
+          <p className="text-xs text-gray-400">Set either or both — you&apos;ll see a badge on your vehicle when it&apos;s due.</p>
+        </div>
+
+        <Separator />
 
         {/* Receipt image preview */}
         {imagePath && (

@@ -4,26 +4,63 @@ import { redirect, notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import Navbar from "@/components/shared/Navbar";
 import PMSRecordList from "@/components/pms/PMSRecordList";
+import FuelLogList from "@/components/fuel/FuelLogList";
+import TabSwitcher from "@/components/shared/TabSwitcher";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, Pencil, Plus } from "lucide-react";
+import { ChevronLeft, Pencil, Plus, AlertTriangle, Clock } from "lucide-react";
 import Image from "next/image";
 import { FUEL_TYPE_STYLES, type FuelType } from "@/lib/fuelType";
 import { formatCurrency, blobImageSrc } from "@/lib/utils";
-import type { PMSRecordParsed } from "@/types";
+import type { PMSRecordParsed, FuelLog, ReminderStatus } from "@/types";
 
-type PageProps = { params: Promise<{ id: string }> };
+type PageProps = {
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ tab?: string }>;
+};
 
-export default async function VehicleDetailPage({ params }: PageProps) {
+function getReminderStatus(
+  latestPMS: { nextServiceDate: Date | null; nextServiceMileage: number | null; nextServiceNote: string | null } | null,
+  latestOdometer: number | null,
+): ReminderStatus | null {
+  if (!latestPMS) return null;
+  const today = new Date();
+
+  if (latestPMS.nextServiceDate) {
+    const msLeft = new Date(latestPMS.nextServiceDate).getTime() - today.getTime();
+    const daysLeft = Math.ceil(msLeft / 86_400_000);
+    const note = latestPMS.nextServiceNote ? ` — ${latestPMS.nextServiceNote}` : "";
+    if (daysLeft < 0) return { level: "overdue", message: `Service overdue${note}` };
+    if (daysLeft <= 30) return { level: "soon", message: `Service due in ${daysLeft} day${daysLeft !== 1 ? "s" : ""}${note}` };
+  }
+
+  if (latestPMS.nextServiceMileage && latestOdometer !== null) {
+    const kmLeft = latestPMS.nextServiceMileage - latestOdometer;
+    const note = latestPMS.nextServiceNote ? ` — ${latestPMS.nextServiceNote}` : "";
+    if (kmLeft <= 0) return { level: "overdue", message: `Service overdue at ${latestPMS.nextServiceMileage.toLocaleString()} km${note}` };
+    if (kmLeft <= 1000) return { level: "soon", message: `Service due in ${kmLeft.toLocaleString()} km${note}` };
+  }
+
+  return null;
+}
+
+export default async function VehicleDetailPage({ params, searchParams }: PageProps) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) redirect("/");
 
   const { id } = await params;
+  const { tab = "maintenance" } = await searchParams;
 
-  const vehicle = await prisma.vehicle.findFirst({
-    where: { id, userId: session.user.id },
-    include: { pmsRecords: { orderBy: { serviceDate: "desc" } } },
-  });
+  const [vehicle, fuelLogs] = await Promise.all([
+    prisma.vehicle.findFirst({
+      where: { id, userId: session.user.id },
+      include: { pmsRecords: { orderBy: { serviceDate: "desc" } } },
+    }),
+    prisma.fuelLog.findMany({
+      where: { vehicleId: id, vehicle: { userId: session.user.id } },
+      orderBy: { date: "desc" },
+    }),
+  ]);
 
   if (!vehicle) notFound();
 
@@ -35,13 +72,24 @@ export default async function VehicleDetailPage({ params }: PageProps) {
   const fuel = FUEL_TYPE_STYLES[(vehicle.fuelType as FuelType) ?? "ICE"];
   const totalSpent = pmsRecords.reduce((sum, r) => sum + r.totalAmount, 0);
   const lastService = pmsRecords[0]?.serviceDate ?? null;
+  const latestOdometer = fuelLogs[0]?.odometer ?? null;
+
+  const reminder = getReminderStatus(
+    pmsRecords[0] ? {
+      nextServiceDate: pmsRecords[0].nextServiceDate,
+      nextServiceMileage: pmsRecords[0].nextServiceMileage,
+      nextServiceNote: pmsRecords[0].nextServiceNote,
+    } : null,
+    latestOdometer,
+  );
+
+  const currentTab = tab === "fuel" ? "fuel" : "maintenance";
 
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar userName={session.user.name} />
       <main className="max-w-4xl mx-auto px-4 py-8">
 
-        {/* Back */}
         <Link href="/dashboard"
           className="inline-flex items-center text-sm text-gray-500 hover:text-gray-700 mb-5 gap-0.5">
           <ChevronLeft className="h-4 w-4" /> Back to Garage
@@ -61,22 +109,18 @@ export default async function VehicleDetailPage({ params }: PageProps) {
                 <span className="text-8xl opacity-10">🚗</span>
               </div>
             )}
-            {/* Gradient overlay for text legibility */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
 
-            {/* Edit button */}
             <Link href={`/vehicles/${id}/edit`}
               className="absolute top-3 right-3 flex items-center gap-1.5 bg-white/20 backdrop-blur-sm text-white text-xs font-medium px-3 py-1.5 rounded-full hover:bg-white/30 transition-colors border border-white/30">
               <Pencil className="h-3 w-3" /> Edit
             </Link>
 
-            {/* Fuel badge */}
             <div className={`absolute top-3 left-3 flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-xs font-bold backdrop-blur-sm bg-white/85 ${fuel.badge}`}>
               <span>{fuel.icon}</span>
               <span>{vehicle.fuelType ?? "ICE"}</span>
             </div>
 
-            {/* Title on image */}
             <div className="absolute bottom-0 left-0 right-0 p-5">
               <h2 className="text-2xl font-bold text-white drop-shadow">
                 {vehicle.year} {vehicle.make} {vehicle.model}
@@ -88,13 +132,14 @@ export default async function VehicleDetailPage({ params }: PageProps) {
           </div>
 
           {/* Stats row */}
-          <div className="grid grid-cols-3 divide-x divide-gray-100 border-b border-gray-100">
+          <div className="grid grid-cols-4 divide-x divide-gray-100 border-b border-gray-100">
             {[
               { label: "Color", value: vehicle.color },
               { label: "PMS Records", value: pmsRecords.length.toString() },
               { label: "Total Spent", value: pmsRecords.length ? formatCurrency(totalSpent) : "—" },
+              { label: "Odometer", value: latestOdometer ? `${latestOdometer.toLocaleString()} km` : "—" },
             ].map(({ label, value }) => (
-              <div key={label} className="px-4 py-3 text-center">
+              <div key={label} className="px-3 py-3 text-center">
                 <p className="text-xs text-gray-400 uppercase tracking-wide">{label}</p>
                 <p className="font-semibold text-gray-800 text-sm mt-0.5 truncate">{value}</p>
               </div>
@@ -123,17 +168,48 @@ export default async function VehicleDetailPage({ params }: PageProps) {
           </div>
         </div>
 
-        {/* PMS History */}
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-bold text-gray-900">PMS History</h3>
-          <Link href={`/vehicles/${id}/pms/new`}>
-            <Button size="sm" className="gap-1.5">
-              <Plus className="h-3.5 w-3.5" /> Add Record
-            </Button>
-          </Link>
+        {/* Reminder banner */}
+        {reminder && (
+          <div className={`flex items-start gap-3 rounded-xl px-4 py-3 mb-5 border ${
+            reminder.level === "overdue"
+              ? "bg-red-50 border-red-200 text-red-800"
+              : "bg-yellow-50 border-yellow-200 text-yellow-800"
+          }`}>
+            {reminder.level === "overdue"
+              ? <AlertTriangle className="h-4 w-4 mt-0.5 shrink-0" />
+              : <Clock className="h-4 w-4 mt-0.5 shrink-0" />}
+            <div className="text-sm">
+              <span className="font-semibold">{reminder.level === "overdue" ? "Overdue: " : "Reminder: "}</span>
+              {reminder.message}
+            </div>
+          </div>
+        )}
+
+        {/* Tabs */}
+        <div className="flex items-center justify-between mb-1">
+          <TabSwitcher vehicleId={id} currentTab={currentTab} />
+          <div className="mb-4">
+            {currentTab === "maintenance" ? (
+              <Link href={`/vehicles/${id}/pms/new`}>
+                <Button size="sm" className="gap-1.5">
+                  <Plus className="h-3.5 w-3.5" /> Add Record
+                </Button>
+              </Link>
+            ) : (
+              <Link href={`/vehicles/${id}/fuel/new`}>
+                <Button size="sm" className="gap-1.5">
+                  <Plus className="h-3.5 w-3.5" /> Log Fill-up
+                </Button>
+              </Link>
+            )}
+          </div>
         </div>
 
-        <PMSRecordList records={pmsRecords} vehicleId={id} />
+        {currentTab === "maintenance" ? (
+          <PMSRecordList records={pmsRecords} vehicleId={id} />
+        ) : (
+          <FuelLogList logs={fuelLogs as FuelLog[]} vehicleId={id} />
+        )}
       </main>
     </div>
   );

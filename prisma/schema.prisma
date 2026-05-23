@@ -31,21 +31,41 @@ model Vehicle {
   createdAt   DateTime    @default(now())
   user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   pmsRecords  PMSRecord[]
+  fuelLogs    FuelLog[]
 
   @@index([userId])
 }
 
 model PMSRecord {
-  id               String   @id @default(cuid())
-  vehicleId        String
-  shopName         String?
-  serviceDate      DateTime
-  mileage          Int?
-  totalAmount      Float
-  items            String
-  receiptImagePath String?
-  createdAt        DateTime @default(now())
-  vehicle          Vehicle  @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  id                 String    @id @default(cuid())
+  vehicleId          String
+  shopName           String?
+  serviceDate        DateTime
+  mileage            Int?
+  totalAmount        Float
+  items              String
+  receiptImagePath   String?
+  nextServiceDate    DateTime?
+  nextServiceMileage Int?
+  nextServiceNote    String?
+  createdAt          DateTime  @default(now())
+  vehicle            Vehicle   @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+
+  @@index([vehicleId])
+}
+
+model FuelLog {
+  id            String   @id @default(cuid())
+  vehicleId     String
+  date          DateTime
+  odometer      Int
+  liters        Float
+  pricePerLiter Float
+  totalCost     Float
+  station       String?
+  notes         String?
+  createdAt     DateTime @default(now())
+  vehicle       Vehicle  @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
 
   @@index([vehicleId])
 }

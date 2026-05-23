@@ -48,6 +48,35 @@ export const pmsRecordSchema = z.object({
     .transform((v) => Number(v))
     .refine((v) => !isNaN(v) && v >= 0, "Total amount must be 0 or more"),
   items: z.array(lineItemSchema).min(1, "At least one service item is required"),
+  nextServiceDate: z.string().optional(),
+  nextServiceMileage: z
+    .union([z.string(), z.number()])
+    .transform((v) => (v === "" ? undefined : Number(v)))
+    .refine((v) => v === undefined || (!isNaN(v as number) && (v as number) > 0), "Must be a positive number")
+    .optional(),
+  nextServiceNote: z.string().optional(),
+});
+
+export const fuelLogSchema = z.object({
+  date: z.string().min(1, "Date is required"),
+  odometer: z
+    .union([z.string(), z.number()])
+    .transform((v) => Number(v))
+    .refine((v) => !isNaN(v) && v >= 0, "Invalid odometer reading"),
+  liters: z
+    .union([z.string(), z.number()])
+    .transform((v) => Number(v))
+    .refine((v) => !isNaN(v) && v > 0, "Liters must be greater than 0"),
+  pricePerLiter: z
+    .union([z.string(), z.number()])
+    .transform((v) => Number(v))
+    .refine((v) => !isNaN(v) && v >= 0, "Invalid price per liter"),
+  totalCost: z
+    .union([z.string(), z.number()])
+    .transform((v) => Number(v))
+    .refine((v) => !isNaN(v) && v > 0, "Total cost must be greater than 0"),
+  station: z.string().optional(),
+  notes: z.string().optional(),
 });
 
 export type RegisterInput = z.infer<typeof registerSchema>;
@@ -55,3 +84,4 @@ export type LoginInput = z.infer<typeof loginSchema>;
 export type VehicleInput = z.infer<typeof vehicleSchema>;
 export type PMSRecordInput = z.infer<typeof pmsRecordSchema>;
 export type LineItem = z.infer<typeof lineItemSchema>;
+export type FuelLogInput = z.infer<typeof fuelLogSchema>;

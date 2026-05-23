@@ -1,4 +1,4 @@
-import type { Vehicle, PMSRecord } from "@/generated/prisma/client";
+import type { Vehicle, PMSRecord, FuelLog } from "@/generated/prisma/client";
 import "next-auth";
 
 declare module "next-auth" {
@@ -11,8 +11,16 @@ declare module "next-auth" {
   }
 }
 
+export type { FuelLog };
+
+export type ReminderStatus = {
+  level: "overdue" | "soon";
+  message: string;
+};
+
 export type VehicleWithCount = Vehicle & {
   _count: { pmsRecords: number };
+  reminder?: ReminderStatus | null;
 };
 
 export type VehicleWithRecords = Vehicle & {
@@ -35,6 +43,11 @@ export interface OCRExtractedData {
   totalAmount?: number;
   items: LineItem[];
   rawText: string;
+}
+
+export interface FuelLogWithEconomy extends FuelLog {
+  kmTraveled: number | null;
+  fuelEconomy: number | null;
 }
 
 export interface ScanReceiptResponse {

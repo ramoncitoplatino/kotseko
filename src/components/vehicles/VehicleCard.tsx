@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { FUEL_TYPE_STYLES, type FuelType } from "@/lib/fuelType";
 import { blobImageSrc } from "@/lib/utils";
+import { AlertTriangle, Clock } from "lucide-react";
 import type { VehicleWithCount } from "@/types";
 
 interface VehicleCardProps {
@@ -52,15 +53,28 @@ export default function VehicleCard({ vehicle }: VehicleCardProps) {
             <p className="text-xs text-gray-400 mt-1 font-mono truncate">{vehicle.vin}</p>
           )}
 
-          <div className="mt-auto pt-3 border-t border-gray-50 flex items-center justify-between">
-            <span className="text-xs text-gray-400">
+          <div className="mt-auto pt-3 border-t border-gray-50 flex items-center justify-between gap-2">
+            <span className="text-xs text-gray-400 shrink-0">
               {vehicle._count.pmsRecords === 0
                 ? "No records yet"
                 : `${vehicle._count.pmsRecords} PMS record${vehicle._count.pmsRecords !== 1 ? "s" : ""}`}
             </span>
-            <span className="text-xs text-blue-500 font-semibold group-hover:text-blue-600">
-              View →
-            </span>
+            {vehicle.reminder ? (
+              <span className={`flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full ${
+                vehicle.reminder.level === "overdue"
+                  ? "bg-red-50 text-red-700"
+                  : "bg-yellow-50 text-yellow-700"
+              }`}>
+                {vehicle.reminder.level === "overdue"
+                  ? <AlertTriangle className="h-3 w-3" />
+                  : <Clock className="h-3 w-3" />}
+                {vehicle.reminder.message}
+              </span>
+            ) : (
+              <span className="text-xs text-blue-500 font-semibold group-hover:text-blue-600">
+                View →
+              </span>
+            )}
           </div>
         </div>
       </div>

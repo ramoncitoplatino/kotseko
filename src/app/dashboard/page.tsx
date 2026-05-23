@@ -7,17 +7,60 @@ import VehicleList from "@/components/vehicles/VehicleList";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
-import type { VehicleWithCount } from "@/types";
+import type { VehicleWithCount, ReminderStatus } from "@/types";
+
+function getReminderStatus(
+  latestPMS: { nextServiceDate: Date | null; nextServiceMileage: number | null } | undefined,
+  latestOdometer: number | null,
+): ReminderStatus | null {
+  if (!latestPMS) return null;
+  const today = new Date();
+
+  if (latestPMS.nextServiceDate) {
+    const daysLeft = Math.ceil((new Date(latestPMS.nextServiceDate).getTime() - today.getTime()) / 86_400_000);
+    if (daysLeft < 0) return { level: "overdue", message: "Service overdue" };
+    if (daysLeft <= 30) return { level: "soon", message: `Due in ${daysLeft}d` };
+  }
+
+  if (latestPMS.nextServiceMileage && latestOdometer !== null) {
+    const kmLeft = latestPMS.nextServiceMileage - latestOdometer;
+    if (kmLeft <= 0) return { level: "overdue", message: "Service overdue" };
+    if (kmLeft <= 1000) return { level: "soon", message: `Due in ${kmLeft.toLocaleString()} km` };
+  }
+
+  return null;
+}
 
 export default async function DashboardPage() {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) redirect("/");
 
-  const vehicles = await prisma.vehicle.findMany({
+  const raw = await prisma.vehicle.findMany({
     where: { userId: session.user.id },
-    include: { _count: { select: { pmsRecords: true } } },
+    include: {
+      _count: { select: { pmsRecords: true } },
+      pmsRecords: {
+        orderBy: { serviceDate: "desc" },
+        take: 1,
+        select: { nextServiceDate: true, nextServiceMileage: true },
+      },
+      fuelLogs: {
+        orderBy: { date: "desc" },
+        take: 1,
+        select: { odometer: true },
+      },
+    },
     orderBy: { createdAt: "desc" },
-  }) as VehicleWithCount[];
+  });
+
+  const vehicles: VehicleWithCount[] = raw.map((v) => {
+    const { pmsRecords, fuelLogs, ...rest } = v;
+    const latestOdometer = fuelLogs[0]?.odometer ?? null;
+    return {
+      ...rest,
+      reminder: getReminderStatus(pmsRecords[0], latestOdometer),
+    };
+  });
 
   const totalRecords = vehicles.reduce((sum, v) => sum + v._count.pmsRecords, 0);
 
@@ -26,7 +69,6 @@ export default async function DashboardPage() {
       <Navbar userName={session.user.name} />
       <main className="max-w-6xl mx-auto px-4 py-8">
 
-        {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
           <div>
             <h1 className="text-3xl font-bold text-gray-900">My Garage</h1>

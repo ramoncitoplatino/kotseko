@@ -46,7 +46,7 @@ export async function POST(req: Request, { params }: RouteParams) {
     return NextResponse.json({ error: parsed.error.flatten().fieldErrors }, { status: 400 });
   }
 
-  const { items, serviceDate, mileage, ...rest } = parsed.data;
+  const { items, serviceDate, mileage, nextServiceDate, nextServiceMileage, nextServiceNote, ...rest } = parsed.data;
   const mileageValue = mileage == null ? null : Number(mileage);
 
   const record = await prisma.pMSRecord.create({
@@ -57,6 +57,9 @@ export async function POST(req: Request, { params }: RouteParams) {
       mileage: mileageValue,
       receiptImagePath: body.receiptImagePath ?? null,
       items: JSON.stringify(items),
+      nextServiceDate: nextServiceDate ? new Date(nextServiceDate) : null,
+      nextServiceMileage: nextServiceMileage ?? null,
+      nextServiceNote: nextServiceNote ?? null,
     },
   });
 
