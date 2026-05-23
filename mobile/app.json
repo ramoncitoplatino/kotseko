@@ -1,0 +1,37 @@
+{
+  "expo": {
+    "name": "Kotseko",
+    "slug": "kotseko",
+    "version": "1.0.0",
+    "scheme": "kotseko",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#1e40af"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#1e40af"
+      },
+      "package": "com.kotseko.app"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-secure-store",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Allow Kotseko to access your photos for vehicle and receipt images.",
+          "cameraPermission": "Allow Kotseko to use your camera to scan receipts and take vehicle photos."
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}
