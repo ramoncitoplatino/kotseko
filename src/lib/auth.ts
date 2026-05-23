@@ -1,12 +1,29 @@
 import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+import GoogleProvider from "next-auth/providers/google";
+import { PrismaAdapter } from "@auth/prisma-adapter";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 import { loginSchema } from "@/lib/validations";
 
 export const authOptions: NextAuthOptions = {
+  adapter: PrismaAdapter(prisma) as NextAuthOptions["adapter"],
   session: { strategy: "jwt" },
   providers: [
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      // Allow linking Google to an existing email/password account
+      allowDangerousEmailAccountLinking: true,
+      authorization: {
+        params: {
+          scope: "openid email profile https://www.googleapis.com/auth/drive.file",
+          access_type: "offline",
+          // Force consent so we always receive a refresh_token
+          prompt: "consent",
+        },
+      },
+    }),
     CredentialsProvider({
       name: "credentials",
       credentials: {
@@ -20,7 +37,7 @@ export const authOptions: NextAuthOptions = {
         const user = await prisma.user.findUnique({
           where: { email: parsed.data.email },
         });
-        if (!user) return null;
+        if (!user || !user.password) return null;
 
         const passwordMatch = await bcrypt.compare(
           parsed.data.password,

@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import Navbar from "@/components/shared/Navbar";
 import VehicleList from "@/components/vehicles/VehicleList";
+import DriveBackupButton from "@/components/drive/DriveBackupButton";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
@@ -78,12 +79,15 @@ export default async function DashboardPage() {
                 : `${vehicles.length} vehicle${vehicles.length !== 1 ? "s" : ""} · ${totalRecords} PMS record${totalRecords !== 1 ? "s" : ""}`}
             </p>
           </div>
-          <Link href="/vehicles/new">
-            <Button className="gap-2 shadow-sm">
-              <Plus className="h-4 w-4" />
-              Add Vehicle
-            </Button>
-          </Link>
+          <div className="flex items-start gap-2">
+            <DriveBackupButton />
+            <Link href="/vehicles/new">
+              <Button className="gap-2 shadow-sm">
+                <Plus className="h-4 w-4" />
+                Add Vehicle
+              </Button>
+            </Link>
+          </div>
         </div>
 
         <VehicleList vehicles={vehicles} />
