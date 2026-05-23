@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import { get } from "@vercel/blob";
 
 export const runtime = "nodejs";
 
@@ -17,20 +18,24 @@ export async function GET(req: Request) {
     return new NextResponse("Invalid URL", { status: 400 });
   }
 
-  const token = process.env.BLOB_READ_WRITE_TOKEN;
-  const upstream = await fetch(url, {
-    headers: token ? { Authorization: `Bearer ${token}` } : {},
-  });
+  try {
+    // Use the SDK's get() — it sends the correct auth headers for private blobs
+    const result = await get(url, {
+      access: "private",
+      token: process.env.BLOB_READ_WRITE_TOKEN,
+    });
 
-  if (!upstream.ok) {
-    return new NextResponse("Image not found", { status: upstream.status });
+    if (!result || !result.stream) {
+      return new NextResponse("Image not found", { status: 404 });
+    }
+
+    return new NextResponse(result.stream as ReadableStream, {
+      headers: {
+        "Content-Type": result.blob.contentType || "image/jpeg",
+        "Cache-Control": "private, max-age=86400",
+      },
+    });
+  } catch {
+    return new NextResponse("Image not found", { status: 404 });
   }
-
-  const contentType = upstream.headers.get("Content-Type") ?? "image/jpeg";
-  return new NextResponse(upstream.body, {
-    headers: {
-      "Content-Type": contentType,
-      "Cache-Control": "private, max-age=86400",
-    },
-  });
 }
