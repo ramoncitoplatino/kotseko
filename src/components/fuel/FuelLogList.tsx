@@ -13,10 +13,10 @@ interface FuelLogListProps {
 export default function FuelLogList({ logs, vehicleId }: FuelLogListProps) {
   if (logs.length === 0) {
     return (
-      <div className="text-center py-12 bg-white rounded-2xl border border-gray-100 shadow-sm">
-        <div className="text-5xl mb-3">⛽</div>
-        <h3 className="font-semibold text-gray-700 mb-1">No fuel logs yet</h3>
-        <p className="text-sm text-gray-400 mb-4">Track your fill-ups to monitor fuel economy.</p>
+      <div className="text-center py-16 bg-white rounded-2xl border border-blue-100 shadow-sm">
+        <div className="w-16 h-16 rounded-2xl bg-blue-50 flex items-center justify-center text-3xl mx-auto mb-4">⛽</div>
+        <h3 className="font-semibold text-gray-800 mb-1">No fuel logs yet</h3>
+        <p className="text-sm text-gray-400 mb-5">Track your fill-ups to monitor fuel economy.</p>
         <Link href={`/vehicles/${vehicleId}/fuel/new`}>
           <Button size="sm">Log First Fill-up</Button>
         </Link>
@@ -49,9 +49,9 @@ export default function FuelLogList({ logs, vehicleId }: FuelLogListProps) {
           { label: "Total Spent", value: formatCurrency(totalFuelSpent) },
           { label: "Avg km/L", value: avgEconomy ? `${avgEconomy.toFixed(1)} km/L` : "—" },
         ].map(({ label, value }) => (
-          <div key={label} className="bg-white rounded-xl border border-gray-100 shadow-sm p-3 text-center">
-            <p className="text-xs text-gray-400 uppercase tracking-wide">{label}</p>
-            <p className="font-bold text-gray-800 text-sm mt-0.5 truncate">{value}</p>
+          <div key={label} className="bg-white rounded-xl border border-blue-100 shadow-sm p-3 text-center">
+            <p className="text-xs text-blue-400 uppercase tracking-wide">{label}</p>
+            <p className="font-bold text-blue-800 text-sm mt-0.5 truncate">{value}</p>
           </div>
         ))}
       </div>
@@ -59,7 +59,7 @@ export default function FuelLogList({ logs, vehicleId }: FuelLogListProps) {
       {/* Entries */}
       <div className="space-y-2">
         {logsWithStats.map((log) => (
-          <div key={log.id} className="bg-white rounded-xl border border-gray-100 shadow-sm px-4 py-3">
+          <div key={log.id} className="bg-white rounded-xl border border-blue-100 shadow-sm px-4 py-3 hover:border-blue-200 transition-colors">
             <div className="flex items-start justify-between gap-2">
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 flex-wrap">
@@ -67,22 +67,22 @@ export default function FuelLogList({ logs, vehicleId }: FuelLogListProps) {
                     {formatDate(log.date)}
                   </span>
                   {log.station && (
-                    <span className="text-xs text-gray-400 truncate">{log.station}</span>
+                    <span className="text-xs text-blue-500 truncate">{log.station}</span>
                   )}
                 </div>
                 <div className="flex items-center gap-3 mt-1.5 flex-wrap">
                   <span className="flex items-center gap-1 text-xs text-gray-500">
-                    <Fuel className="h-3 w-3" />
+                    <Fuel className="h-3 w-3 text-blue-400" />
                     {log.liters.toFixed(1)}L · ₱{log.pricePerLiter.toFixed(2)}/L
                   </span>
                   <span className="flex items-center gap-1 text-xs text-gray-500">
-                    <Gauge className="h-3 w-3" />
+                    <Gauge className="h-3 w-3 text-blue-400" />
                     {log.odometer.toLocaleString()} km
                   </span>
                   {log.fuelEconomy !== null && (
                     <span className={`text-xs font-semibold px-1.5 py-0.5 rounded-full ${
                       log.fuelEconomy >= 12 ? "bg-green-50 text-green-700" :
-                      log.fuelEconomy >= 8  ? "bg-yellow-50 text-yellow-700" :
+                      log.fuelEconomy >= 8  ? "bg-amber-50 text-amber-700" :
                                               "bg-red-50 text-red-700"
                     }`}>
                       {log.fuelEconomy.toFixed(1)} km/L
@@ -94,7 +94,7 @@ export default function FuelLogList({ logs, vehicleId }: FuelLogListProps) {
                 )}
               </div>
               <div className="flex items-center gap-2 shrink-0">
-                <span className="font-semibold text-sm text-gray-800">{formatCurrency(log.totalCost)}</span>
+                <span className="font-bold text-sm text-blue-700">{formatCurrency(log.totalCost)}</span>
                 <DeleteFuelLogButton vehicleId={vehicleId} logId={log.id} />
               </div>
             </div>

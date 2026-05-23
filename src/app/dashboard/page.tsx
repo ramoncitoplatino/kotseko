@@ -66,30 +66,45 @@ export default async function DashboardPage() {
   const totalRecords = vehicles.reduce((sum, v) => sum + v._count.pmsRecords, 0);
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-blue-50">
       <Navbar userName={session.user.name} />
-      <main className="max-w-6xl mx-auto px-4 py-8">
 
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">My Garage</h1>
-            <p className="text-gray-500 mt-1 text-sm">
-              {vehicles.length === 0
-                ? "No vehicles registered yet"
-                : `${vehicles.length} vehicle${vehicles.length !== 1 ? "s" : ""} · ${totalRecords} PMS record${totalRecords !== 1 ? "s" : ""}`}
-            </p>
-          </div>
-          <div className="flex items-start gap-2">
-            <DriveBackupButton />
+      {/* Blue hero header */}
+      <div className="bg-gradient-to-br from-blue-900 to-blue-800">
+        <div className="max-w-6xl mx-auto px-4 py-8">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-5">
+            <div>
+              <p className="text-blue-300 text-sm font-medium mb-1">
+                Welcome back, {session.user.name?.split(" ")[0] ?? "there"} 👋
+              </p>
+              <h1 className="text-2xl font-bold text-white">My Garage</h1>
+              {vehicles.length > 0 && (
+                <div className="flex gap-4 mt-3">
+                  <div className="bg-white/10 rounded-xl px-3 py-1.5 text-center">
+                    <p className="text-white font-bold text-lg leading-none">{vehicles.length}</p>
+                    <p className="text-blue-200 text-xs mt-0.5">Vehicle{vehicles.length !== 1 ? "s" : ""}</p>
+                  </div>
+                  <div className="bg-white/10 rounded-xl px-3 py-1.5 text-center">
+                    <p className="text-white font-bold text-lg leading-none">{totalRecords}</p>
+                    <p className="text-blue-200 text-xs mt-0.5">PMS Record{totalRecords !== 1 ? "s" : ""}</p>
+                  </div>
+                </div>
+              )}
+            </div>
             <Link href="/vehicles/new">
-              <Button className="gap-2 shadow-sm">
+              <Button className="gap-2 bg-white text-blue-800 hover:bg-blue-50 border-0 shadow-md font-semibold">
                 <Plus className="h-4 w-4" />
                 Add Vehicle
               </Button>
             </Link>
           </div>
         </div>
+      </div>
 
+      <main className="max-w-6xl mx-auto px-4 py-7">
+        <div className="flex justify-end mb-5">
+          <DriveBackupButton />
+        </div>
         <VehicleList vehicles={vehicles} />
       </main>
     </div>

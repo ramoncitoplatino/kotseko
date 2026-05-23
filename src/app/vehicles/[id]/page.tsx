@@ -86,20 +86,20 @@ export default async function VehicleDetailPage({ params, searchParams }: PagePr
   const currentTab = tab === "fuel" ? "fuel" : "maintenance";
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-blue-50">
       <Navbar userName={session.user.name} />
       <main className="max-w-4xl mx-auto px-4 py-8">
 
         <Link href="/dashboard"
-          className="inline-flex items-center text-sm text-gray-500 hover:text-gray-700 mb-5 gap-0.5">
+          className="inline-flex items-center text-sm text-blue-600 hover:text-blue-800 mb-5 gap-0.5 font-medium">
           <ChevronLeft className="h-4 w-4" /> Back to Garage
         </Link>
 
         {/* Hero card */}
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm mb-5 overflow-hidden">
+        <div className="bg-white rounded-2xl border border-blue-100 shadow-sm mb-5 overflow-hidden">
 
           {/* Image / gradient header */}
-          <div className="relative h-52 sm:h-64 bg-gradient-to-br from-slate-700 to-slate-900">
+          <div className="relative h-52 sm:h-64 bg-gradient-to-br from-blue-800 to-blue-950">
             {vehicle.imagePath ? (
               <Image src={blobImageSrc(vehicle.imagePath)!}
                 alt={`${vehicle.make} ${vehicle.model}`} fill
@@ -109,14 +109,14 @@ export default async function VehicleDetailPage({ params, searchParams }: PagePr
                 <span className="text-8xl opacity-10">🚗</span>
               </div>
             )}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-blue-950/80 via-transparent to-transparent" />
 
             <Link href={`/vehicles/${id}/edit`}
               className="absolute top-3 right-3 flex items-center gap-1.5 bg-white/20 backdrop-blur-sm text-white text-xs font-medium px-3 py-1.5 rounded-full hover:bg-white/30 transition-colors border border-white/30">
               <Pencil className="h-3 w-3" /> Edit
             </Link>
 
-            <div className={`absolute top-3 left-3 flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-xs font-bold backdrop-blur-sm bg-white/85 ${fuel.badge}`}>
+            <div className={`absolute top-3 left-3 flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-xs font-bold backdrop-blur-sm bg-white/90 ${fuel.badge}`}>
               <span>{fuel.icon}</span>
               <span>{vehicle.fuelType ?? "ICE"}</span>
             </div>
@@ -125,14 +125,14 @@ export default async function VehicleDetailPage({ params, searchParams }: PagePr
               <h2 className="text-2xl font-bold text-white drop-shadow">
                 {vehicle.year} {vehicle.make} {vehicle.model}
               </h2>
-              <p className="text-white/80 font-semibold tracking-widest text-sm mt-0.5">
+              <p className="text-blue-200 font-semibold tracking-widest text-sm mt-0.5">
                 {vehicle.plateNumber}
               </p>
             </div>
           </div>
 
           {/* Stats row */}
-          <div className="grid grid-cols-4 divide-x divide-gray-100 border-b border-gray-100">
+          <div className="grid grid-cols-4 divide-x divide-blue-50 border-b border-blue-50 bg-blue-50/40">
             {[
               { label: "Color", value: vehicle.color },
               { label: "PMS Records", value: pmsRecords.length.toString() },
@@ -140,8 +140,8 @@ export default async function VehicleDetailPage({ params, searchParams }: PagePr
               { label: "Odometer", value: latestOdometer ? `${latestOdometer.toLocaleString()} km` : "—" },
             ].map(({ label, value }) => (
               <div key={label} className="px-3 py-3 text-center">
-                <p className="text-xs text-gray-400 uppercase tracking-wide">{label}</p>
-                <p className="font-semibold text-gray-800 text-sm mt-0.5 truncate">{value}</p>
+                <p className="text-xs text-blue-400 uppercase tracking-wide">{label}</p>
+                <p className="font-bold text-blue-800 text-sm mt-0.5 truncate">{value}</p>
               </div>
             ))}
           </div>
@@ -157,7 +157,7 @@ export default async function VehicleDetailPage({ params, searchParams }: PagePr
             {lastService && (
               <div>
                 <span className="text-gray-400">Last service </span>
-                <span className="text-gray-700">
+                <span className="text-gray-700 font-medium">
                   {new Date(lastService).toLocaleDateString("en-PH", { month: "short", day: "numeric", year: "numeric" })}
                 </span>
               </div>
@@ -173,7 +173,7 @@ export default async function VehicleDetailPage({ params, searchParams }: PagePr
           <div className={`flex items-start gap-3 rounded-xl px-4 py-3 mb-5 border ${
             reminder.level === "overdue"
               ? "bg-red-50 border-red-200 text-red-800"
-              : "bg-yellow-50 border-yellow-200 text-yellow-800"
+              : "bg-amber-50 border-amber-200 text-amber-800"
           }`}>
             {reminder.level === "overdue"
               ? <AlertTriangle className="h-4 w-4 mt-0.5 shrink-0" />
@@ -185,19 +185,19 @@ export default async function VehicleDetailPage({ params, searchParams }: PagePr
           </div>
         )}
 
-        {/* Tabs */}
+        {/* Tabs + action */}
         <div className="flex items-center justify-between mb-1">
           <TabSwitcher vehicleId={id} currentTab={currentTab} />
           <div className="mb-4">
             {currentTab === "maintenance" ? (
               <Link href={`/vehicles/${id}/pms/new`}>
-                <Button size="sm" className="gap-1.5">
+                <Button size="sm" className="gap-1.5 shadow-sm">
                   <Plus className="h-3.5 w-3.5" /> Add Record
                 </Button>
               </Link>
             ) : (
               <Link href={`/vehicles/${id}/fuel/new`}>
-                <Button size="sm" className="gap-1.5">
+                <Button size="sm" className="gap-1.5 shadow-sm">
                   <Plus className="h-3.5 w-3.5" /> Log Fill-up
                 </Button>
               </Link>

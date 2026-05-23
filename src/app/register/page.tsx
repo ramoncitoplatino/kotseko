@@ -8,14 +8,18 @@ export default async function RegisterPage() {
   if (session?.user) redirect("/dashboard");
 
   return (
-    <main className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-sm border p-8">
+    <main className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-950 via-blue-900 to-blue-800 px-4 py-8">
+      <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <div className="text-5xl mb-2">🚗</div>
-          <h1 className="text-3xl font-bold text-gray-900">Kotseko</h1>
-          <p className="text-gray-500 mt-1">Create your account</p>
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-white/15 backdrop-blur-sm rounded-2xl mb-4 text-4xl shadow-lg">
+            🚗
+          </div>
+          <h1 className="text-3xl font-bold text-white tracking-tight">Kotseko</h1>
+          <p className="text-blue-200 mt-1">Create your account</p>
         </div>
-        <RegisterForm />
+        <div className="bg-white rounded-2xl shadow-2xl shadow-blue-950/40 p-8">
+          <RegisterForm />
+        </div>
       </div>
     </main>
   );
