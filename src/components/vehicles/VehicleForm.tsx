@@ -79,7 +79,13 @@ export default function VehicleForm({ vehicleId, defaultValues }: VehicleFormPro
       router.push(`/vehicles/${vehicle.id}`);
       router.refresh();
     } else {
-      setError("Failed to save vehicle. Please try again.");
+      const json = await res.json().catch(() => ({}));
+      const msg = typeof json.error === "string"
+        ? json.error
+        : json.error
+          ? JSON.stringify(json.error)
+          : "Failed to save vehicle. Please try again.";
+      setError(msg);
     }
   }
 

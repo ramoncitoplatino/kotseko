@@ -34,9 +34,13 @@ export async function POST(req: Request) {
     );
   }
 
-  const vehicle = await prisma.vehicle.create({
-    data: { ...parsed.data, userId: session.user.id },
-  });
-
-  return NextResponse.json(vehicle, { status: 201 });
+  try {
+    const vehicle = await prisma.vehicle.create({
+      data: { ...parsed.data, userId: session.user.id },
+    });
+    return NextResponse.json(vehicle, { status: 201 });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    return NextResponse.json({ error: message }, { status: 500 });
+  }
 }

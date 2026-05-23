@@ -24,7 +24,7 @@ export const vehicleSchema = z.object({
   vin: z.string().optional(),
   fuelType: z.enum(["ICE", "BEV", "PHEV", "HEV"]).default("ICE"),
   notes: z.string().optional(),
-  imagePath: z.string().optional(),
+  imagePath: z.string().nullable().optional(),
 });
 
 export const lineItemSchema = z.object({

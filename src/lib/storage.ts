@@ -9,7 +9,7 @@ export async function saveFile(
   if (process.env.BLOB_READ_WRITE_TOKEN) {
     const { put } = await import("@vercel/blob");
     const blob = await put(`${folder}/${filename}`, buffer, {
-      access: "public",
+      access: "private",
       contentType: filename.endsWith(".png") ? "image/png" : "image/jpeg",
     });
     return blob.url;

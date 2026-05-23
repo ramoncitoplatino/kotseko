@@ -44,12 +44,16 @@ export async function PUT(req: Request, { params }: RouteParams) {
     return NextResponse.json({ error: parsed.error.flatten().fieldErrors }, { status: 400 });
   }
 
-  const updated = await prisma.vehicle.update({
-    where: { id },
-    data: parsed.data,
-  });
-
-  return NextResponse.json(updated);
+  try {
+    const updated = await prisma.vehicle.update({
+      where: { id },
+      data: parsed.data,
+    });
+    return NextResponse.json(updated);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    return NextResponse.json({ error: message }, { status: 500 });
+  }
 }
 
 export async function DELETE(_req: Request, { params }: RouteParams) {
