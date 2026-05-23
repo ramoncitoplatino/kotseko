@@ -7,7 +7,7 @@ import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import { ChevronLeft, Calendar, Gauge, Store } from "lucide-react";
-import { formatCurrency, formatDate } from "@/lib/utils";
+import { formatCurrency, formatDate, blobImageSrc } from "@/lib/utils";
 import type { LineItem } from "@/types";
 import Image from "next/image";
 import DeletePMSRecordButton from "@/components/pms/DeletePMSRecordButton";
@@ -113,7 +113,7 @@ export default async function PMSRecordDetailPage({ params }: PageProps) {
                 <h3 className="font-semibold text-gray-700 mb-3">Receipt Image</h3>
                 <div className="rounded-lg overflow-hidden border bg-gray-50">
                   <Image
-                    src={record.receiptImagePath}
+                    src={blobImageSrc(record.receiptImagePath)!}
                     alt="Receipt"
                     width={600}
                     height={400}

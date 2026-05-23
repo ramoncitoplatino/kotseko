@@ -4,6 +4,7 @@ import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { pmsRecordSchema, type PMSRecordInput } from "@/lib/validations";
+import { blobImageSrc } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -240,7 +241,7 @@ export default function ReceiptReviewForm({
             <Label>Receipt Image</Label>
             <div className="border rounded-lg overflow-hidden bg-gray-50">
               <Image
-                src={imagePath}
+                src={blobImageSrc(imagePath)!}
                 alt="Receipt"
                 width={600}
                 height={300}

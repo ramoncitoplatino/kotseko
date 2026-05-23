@@ -5,6 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import { vehicleSchema, type VehicleInput } from "@/lib/validations";
+import { blobImageSrc } from "@/lib/utils";
 import { FUEL_TYPES, FUEL_TYPE_STYLES, type FuelType } from "@/lib/fuelType";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -100,7 +101,7 @@ export default function VehicleForm({ vehicleId, defaultValues }: VehicleFormPro
 
         {imagePreview ? (
           <div className="relative w-full h-52 rounded-xl overflow-hidden border bg-gray-100">
-            <Image src={imagePreview} alt="Vehicle" fill className="object-cover" unoptimized />
+            <Image src={blobImageSrc(imagePreview) ?? imagePreview} alt="Vehicle" fill className="object-cover" unoptimized />
             {uploading ? (
               <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
                 <Loader2 className="h-8 w-8 text-white animate-spin" />

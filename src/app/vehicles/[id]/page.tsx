@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { ChevronLeft, Pencil, Plus } from "lucide-react";
 import Image from "next/image";
 import { FUEL_TYPE_STYLES, type FuelType } from "@/lib/fuelType";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency, blobImageSrc } from "@/lib/utils";
 import type { PMSRecordParsed } from "@/types";
 
 type PageProps = { params: Promise<{ id: string }> };
@@ -53,7 +53,7 @@ export default async function VehicleDetailPage({ params }: PageProps) {
           {/* Image / gradient header */}
           <div className="relative h-52 sm:h-64 bg-gradient-to-br from-slate-700 to-slate-900">
             {vehicle.imagePath ? (
-              <Image src={vehicle.imagePath}
+              <Image src={blobImageSrc(vehicle.imagePath)!}
                 alt={`${vehicle.make} ${vehicle.model}`} fill
                 className="object-cover opacity-90" unoptimized />
             ) : (

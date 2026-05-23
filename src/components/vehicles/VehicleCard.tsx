@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { FUEL_TYPE_STYLES, type FuelType } from "@/lib/fuelType";
+import { blobImageSrc } from "@/lib/utils";
 import type { VehicleWithCount } from "@/types";
 
 interface VehicleCardProps {
@@ -17,7 +18,7 @@ export default function VehicleCard({ vehicle }: VehicleCardProps) {
         {/* Image */}
         <div className="relative h-44 bg-gradient-to-br from-gray-100 to-gray-200 shrink-0">
           {vehicle.imagePath ? (
-            <Image src={vehicle.imagePath} alt={`${vehicle.make} ${vehicle.model}`}
+            <Image src={blobImageSrc(vehicle.imagePath)!} alt={`${vehicle.make} ${vehicle.model}`}
               fill className="object-cover group-hover:scale-105 transition-transform duration-300" unoptimized />
           ) : (
             <div className="absolute inset-0 flex items-center justify-center">
