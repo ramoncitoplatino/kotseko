@@ -8,7 +8,39 @@
       "Read(//c/Users/My PC/Projects/**)",
       "Bash(npm --version)",
       "Bash(npx --version)",
-      "Bash(npx create-next-app@latest . --typescript --tailwind --eslint --app --src-dir --import-alias \"@/*\" --no-git --yes)"
+      "Bash(npx create-next-app@latest . --typescript --tailwind --eslint --app --src-dir --import-alias \"@/*\" --no-git --yes)",
+      "Bash(npm install *)",
+      "Bash(npm list *)",
+      "Bash(npx shadcn@latest init --yes --defaults)",
+      "Bash(npx shadcn@latest add card input label form select textarea badge separator alert dialog --yes)",
+      "Bash(npx prisma *)",
+      "Bash(mkdir -p \"c:\\\\Users\\\\My PC\\\\Projects\\\\kotseko\\\\src\\\\app\\\\api\\\\auth\\\\[...nextauth]\" \"c:\\\\Users\\\\My PC\\\\Projects\\\\kotseko\\\\src\\\\app\\\\api\\\\register\" \"c:\\\\Users\\\\My PC\\\\Projects\\\\kotseko\\\\src\\\\app\\\\register\" \"c:\\\\Users\\\\My PC\\\\Projects\\\\kotseko\\\\src\\\\components\\\\auth\" 2>&1)",
+      "Bash(mkdir -p \"c:\\\\Users\\\\My PC\\\\Projects\\\\kotseko\\\\src\\\\app\\\\api\\\\vehicles\\\\[id]\\\\pms\\\\[recordId]\" \"c:\\\\Users\\\\My PC\\\\Projects\\\\kotseko\\\\src\\\\app\\\\dashboard\" \"c:\\\\Users\\\\My PC\\\\Projects\\\\kotseko\\\\src\\\\app\\\\vehicles\\\\new\" \"c:\\\\Users\\\\My PC\\\\Projects\\\\kotseko\\\\src\\\\app\\\\vehicles\\\\[id]\\\\pms\\\\new\" \"c:\\\\Users\\\\My PC\\\\Projects\\\\kotseko\\\\src\\\\app\\\\vehicles\\\\[id]\\\\pms\\\\[recordId]\" \"c:\\\\Users\\\\My PC\\\\Projects\\\\kotseko\\\\src\\\\components\\\\vehicles\" \"c:\\\\Users\\\\My PC\\\\Projects\\\\kotseko\\\\src\\\\components\\\\pms\" \"c:\\\\Users\\\\My PC\\\\Projects\\\\kotseko\\\\src\\\\components\\\\shared\" \"c:\\\\Users\\\\My PC\\\\Projects\\\\kotseko\\\\public\\\\uploads\" 2>&1)",
+      "Bash(npx tsc *)",
+      "Bash(node -e \"const a = require\\('@prisma/adapter-better-sqlite3'\\); console.log\\(Object.keys\\(a\\)\\)\")",
+      "Bash(node -e \"const a = require\\('@prisma/adapter-better-sqlite3'\\); const c = new a.PrismaBetterSqlite3.toString\\(\\); console.log\\(c.slice\\(0, 200\\)\\)\")",
+      "Bash(node -e \"const a = require\\('@prisma/adapter-better-sqlite3'\\); const P = a.PrismaBetterSqlite3; const p = new P\\({url: ':memory:'}\\); console.log\\('ok'\\)\")",
+      "Bash(npm run *)",
+      "Bash(curl -s http://localhost:3000 -o /dev/null -w \"%{http_code}\")",
+      "Bash(Start-Process npm *)",
+      "Bash(Start-Sleep 5)",
+      "Bash(Invoke-WebRequest -Uri \"http://localhost:3000\" -Method GET -UseBasicParsing)",
+      "Bash(Select-Object -ExpandProperty StatusCode)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000/)",
+      "Bash(curl -s -X POST http://localhost:3000/api/register -H 'Content-Type: application/json' -d '{\"name\":\"Test User\",\"email\":\"test@kotseko.ph\",\"password\":\"password123\"}' -w '\\\\n%{http_code}')",
+      "Bash(curl -s -X POST http://localhost:3000/api/auth/callback/credentials -H 'Content-Type: application/json' -d '{\"email\":\"test@kotseko.ph\",\"password\":\"password123\"}' -w '\\\\n%{http_code}')",
+      "Bash(npm uninstall *)",
+      "Bash(mkdir -p \"c:\\\\Users\\\\My PC\\\\Projects\\\\kotseko\\\\src\\\\app\\\\vehicles\\\\[id]\\\\edit\")",
+      "Bash(node -e \"const a = require\\('@prisma/adapter-neon'\\); console.log\\(Object.keys\\(a\\)\\)\")",
+      "Bash(node -e \"const {PrismaNeonHttp} = require\\('@prisma/adapter-neon'\\); console.log\\(PrismaNeonHttp.length, PrismaNeonHttp.toString\\(\\).slice\\(0,200\\)\\)\")",
+      "Bash(git init *)",
+      "Bash(git add *)",
+      "Bash(git commit *)"
+    ],
+    "additionalDirectories": [
+      "c:\\Users\\My PC\\Projects\\kotseko\\src\\app\\api\\auth",
+      "c:\\Users\\My PC\\Projects\\kotseko\\src\\app\\api\\vehicles\\[id]\\pms",
+      "c:\\Users\\My PC\\Projects\\kotseko\\src\\app\\vehicles\\[id]"
     ]
   }
 }
